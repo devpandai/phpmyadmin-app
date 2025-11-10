@@ -42,6 +42,7 @@ pipeline {
         script {
         sh """
         set -e
+        rm -rf deploy-repo
         git clone $GITOPS_REPO deploy-repo
         cd deploy-repo
 
