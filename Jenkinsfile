@@ -37,20 +37,30 @@ pipeline {
     }
 
     stage('Update GitOps Repo') {
-      steps {
+    steps {
+        echo "=== Updating GitOps Repo ==="
         script {
-          sh """
-          git clone $GITOPS_REPO deploy-repo
-          cd deploy-repo
-          sed -i 's|image:.*|image: $REGISTRY/$IMAGE_NAME:$IMAGE_TAG|' phpmyadmin-deployment.yaml
-          git config user.name "jenkins"
-          git config user.email "jenkins@local"
-          git add .
-          git commit -m "update image to $IMAGE_TAG"
-          git push
-          """
+        sh """
+        set -e
+        git clone $GITOPS_REPO deploy-repo
+        cd deploy-repo
+
+        sed -i 's|image:.*|image: $REGISTRY/$IMAGE_NAME:$IMAGE_TAG|' phpmyadmin-deployment.yaml
+
+        git config user.name "jenkins"
+        git config user.email "jenkins@local"
+        git add .
+
+        if git diff --cached --quiet; then
+            echo "No changes to commit"
+        else
+            git commit -m "update image to $IMAGE_TAG"
+            git push
+        fi
+        """
         }
-      }
     }
+    }
+
   }
 }
