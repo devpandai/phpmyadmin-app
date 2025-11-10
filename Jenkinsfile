@@ -27,7 +27,7 @@ pipeline {
 
     stage('Login & Push Image') {
       steps {
-        withCredentials([string(credentialsId: 'ghcr-token', variable: 'TOKEN')]) {
+        withCredentials([string(credentialsId: 'github-token', variable: 'TOKEN')]) {
           sh """
           echo $TOKEN | docker login ghcr.io -u devpandai --password-stdin
           docker push $REGISTRY/$IMAGE_NAME:$IMAGE_TAG
